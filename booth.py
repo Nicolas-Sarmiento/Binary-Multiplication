@@ -4,7 +4,7 @@ def to_binary(num, bits):
     binaria en complemento a dos con un número fijo de bits.
     """
     if num < 0:
-        num = (1 << bits) + num  # complemento a dos
+        num = (1 << bits) + num  
     return format(num, '0{}b'.format(bits))
 
 def from_binary(bin_str):
@@ -13,7 +13,7 @@ def from_binary(bin_str):
     """
     bits = len(bin_str)
     num = int(bin_str, 2)
-    if bin_str[0] == '1':  # si es negativo
+    if bin_str[0] == '1':  
         num -= (1 << bits)
     return num
 
@@ -22,23 +22,23 @@ def booth(multiplicando, multiplicador, bits=8):
     Algoritmo de Booth para multiplicar dos enteros (positivos o negativos).
     Retorna el producto en decimal y binario.
     """
-    # Representaciones en binario
+
     A = to_binary(multiplicando, bits)
     S = to_binary(multiplicador, bits)
 
-    # Inicialización
-    P = '0' * bits           # acumulador
-    Q = S                    # multiplicador
-    Q_1 = '0'                # bit extra
+
+    P = '0' * bits           
+    Q = S                    
+    Q_1 = '0'               
     count = bits
 
     print("Estado inicial:")
     print(f"P = {P}, Q = {Q}, Q-1 = {Q_1}\n")
 
-    # Bucle principal
+
     while count > 0:
         print(f"Iteración {bits - count + 1}:")
-        pair = Q[-1] + Q_1   # (Q0, Q-1)
+        pair = Q[-1] + Q_1   
 
         if pair == "01":
             print("Caso 01: P = P + A")
@@ -50,10 +50,9 @@ def booth(multiplicando, multiplicador, bits=8):
 
         print(f"Antes del shift: P = {P}, Q = {Q}, Q-1 = {Q_1}")
 
-        # Shift aritmético a la derecha (P, Q, Q-1)
         total = P + Q + Q_1
         sign_bit = total[0]
-        total = sign_bit + total[:-1]   # corrimiento a la derecha
+        total = sign_bit + total[:-1]   
         P = total[:bits]
         Q = total[bits:2*bits]
         Q_1 = total[-1]
@@ -62,7 +61,7 @@ def booth(multiplicando, multiplicador, bits=8):
 
         count -= 1
 
-    # Resultado
+
     result_bin = P + Q
     result_dec = from_binary(result_bin)
 
@@ -73,9 +72,8 @@ def booth(multiplicando, multiplicador, bits=8):
     return result_dec, result_bin
 
 
-# ------------------ EJEMPLO ------------------
 if __name__ == "__main__":
     m = int(input("Ingrese el multiplicando: "))
     q = int(input("Ingrese el multiplicador: "))
-    bits = 6   # puedes ajustar el número de bits según los valores
+    bits = 6   
     booth(m, q, bits)

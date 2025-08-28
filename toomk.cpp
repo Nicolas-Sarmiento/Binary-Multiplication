@@ -1,16 +1,24 @@
-//#include <bits/stdc++.h>
-#include <iostrema>
+#include <iostream>
 #include <vector>
-#define N 16
+#include <bitset>
+#include <climits>
+#include <cmath>
+#define N 16 // N bits constant
 using namespace std;
 using ll = long long;
 
+
+/*
+    Struct to represent 2D points.
+*/
 struct Point {
     ll x;
     ll y;
 };
 
-
+/*
+    Gauss-Jordan solver, returns a coefficient array.
+*/
 vector<long double> gauss(vector<vector<long double>> A, vector<long double> b) {
     int n = (int)A.size();
     for (int i = 0; i < n; i++) {
@@ -18,20 +26,17 @@ vector<long double> gauss(vector<vector<long double>> A, vector<long double> b) 
     }
 
     for (int i = 0; i < n; i++) {
-        // Pivote
         int pivot = i;
         for (int j = i + 1; j < n; j++) {
-            if (fabsl(A[j][i]) > fabsl(A[pivot][i]))
+            if (abs(A[j][i]) > abs(A[pivot][i]))
                 pivot = j;
         }
         swap(A[i], A[pivot]);
 
-        // Normalizar fila
         long double div = A[i][i];
-        if (fabsl(div) < 1e-18) continue; 
+        if (abs(div) < 1e-18) continue; 
         for (int j = i; j <= n; j++) A[i][j] /= div;
 
-        // Eliminar hacia abajo
         for (int j = 0; j < n; j++) {
             if (j == i) continue;
             long double factor = A[j][i];
@@ -46,7 +51,10 @@ vector<long double> gauss(vector<vector<long double>> A, vector<long double> b) 
     return x;
 }
 
-// Interpolación polinómica usando Gauss
+/*
+    Interpolation function that returns a coefficent array of interpoled Function.
+    Convert points into a matrix to solve using gauss-jordan method.
+*/  
 vector<ll> interpolate(const vector<Point>& pts) {
     int n = (int)pts.size();
     vector<vector<long double>> A(n, vector<long double>(n, 0));
@@ -56,7 +64,6 @@ vector<ll> interpolate(const vector<Point>& pts) {
         ll xi = pts[i].x;
         b[i] = pts[i].y;
         if (xi == LLONG_MAX) { 
-            // "infinito": solo afecta el coeficiente de mayor grado
             A[i][n-1] = 1.0;
         } else {
             long double p = 1;
@@ -69,7 +76,6 @@ vector<ll> interpolate(const vector<Point>& pts) {
 
     vector<long double> sol = gauss(A, b);
 
-    // Convertir a ll (aprox)
     vector<ll> coeffs(n);
     for (int i = 0; i < n; i++) {
         coeffs[i] = llround(sol[i]);
@@ -77,6 +83,9 @@ vector<ll> interpolate(const vector<Point>& pts) {
     return coeffs;
 }
 
+/*
+    Print the polynomial from of a function by its coeeficient array.
+*/
 void print_polynomial(vector<ll> &coeff_vector){
     if ( coeff_vector.size() < 1) return;
     cout << coeff_vector[0];
@@ -84,6 +93,10 @@ void print_polynomial(vector<ll> &coeff_vector){
         cout << " + " << coeff_vector[i] << "x^" << i;
     }
 }
+
+/*
+    Power method using fast exponentation 
+*/
 
 ll powll(ll base, ll exp) {
     ll result = 1;
@@ -94,6 +107,10 @@ ll powll(ll base, ll exp) {
     }
     return result;
 }
+
+/*
+    Evals a polynomial in an x point.
+*/
 
 ll evaluate_polynomial(vector<ll> &coeff_vector, ll x){
     if ( coeff_vector.size() < 1 ) return 0;
@@ -194,6 +211,6 @@ int main() {
 
 
     ll multiplication = evaluate_polynomial(Zx, (1<<m));
-    cout << "AB =  " <<bitset<32>(multiplication)  << " Radix 2, " << multiplication << " Radix 10 \n"; 
+    cout << "AB = " <<bitset<32>(multiplication)  << " Radix 2, " << multiplication << " Radix 10 \n"; 
 
 }
